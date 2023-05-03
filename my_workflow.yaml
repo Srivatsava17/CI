@@ -1,0 +1,47 @@
+jobs:
+  dev:
+    runs-on: ubuntu-latest
+    steps: []
+  prod:
+    needs: qa
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+    - env:
+        DATABRICKS_HOST: your-databricks-instance-url
+        DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        DESTINATION_PATH: /prod/destination/path/
+        SOURCE_PATH: /path/to/your/prod_script.py
+      name: Copy Prod script to Databricks
+      run: databricks workspace import -l PYTHON -f ${{ env.SOURCE_PATH }} -n ${{
+        env.DESTINATION_PATH }}
+      tags: TEST-ETL, production
+    - env:
+        ENVIRONMENT: production
+      name: Deploy to Production Environment
+      run: "\n                        echo \"Deploying to production environment\"\
+        \n                        # Copy command from Github repository to EC2 instance\n\
+        \                        cp /path/to/your/copy_command.sh /path/to/your/github/repository/copy_command.sh\n\
+        \                        cd /path/to/your/github/repository\n            \
+        \            git add copy_command.sh\n                        git commit -m\
+        \ 'Add copy command from DAG file'\n                        git push\n   \
+        \                     # Copy command from Github repository to EC2 instance\n\
+        \                        echo 'Copying command from Github repository to EC2\
+        \ instance'\n                        ssh user@your_ec2_instance_ip_address\
+        \ 'git clone https://your-github-repo-url.git'\n                        ssh\
+        \ user@your_ec2_instance_ip_address 'cd your-github-repo-name && cp copy_command.sh\
+        \ /path/to/destination/directory'\n                    "
+      tags: TEST-ETL, production
+  qa:
+    needs: dev
+    runs-on: ubuntu-latest
+    steps: []
+name: My Workflow
+'on':
+  pull_request:
+    branches:
+    - main
+  push:
+    branches:
+    - main
