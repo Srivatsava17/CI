@@ -20,14 +20,12 @@ jobs:
         DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
         SOURCE_PATH: /path/to/your/dev_script.py
         DESTINATION_PATH: /dev/destination/path/
-      tags: TEST-ETL, dev
     - name: Copy Dag to EC2
       run: scp -i ~/.ssh/ec2_key.pem -r ${{ env.SOURCE_PATH }} ec2-user@${{ secrets.EC2_IP_ADDRESS
         }}:${{ env.DESTINATION_PATH }}
       env:
         SOURCE_PATH: /path/to/your/dag_file.py
         DESTINATION_PATH: /home/ec2-user/destination/path/
-      tags: TEST-ETL, dev
   qa:
     runs-on: ubuntu-latest
     needs: dev
@@ -42,14 +40,12 @@ jobs:
         DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
         SOURCE_PATH: /path/to/your/qa_script.py
         DESTINATION_PATH: /qa/destination/path/
-      tags: TEST-ETL, qa
     - name: Copy Dag to EC2
       run: scp -i ~/.ssh/ec2_key.pem -r ${{ env.SOURCE_PATH }} ec2-user@${{ secrets.EC2_IP_ADDRESS
         }}:${{ env.DESTINATION_PATH }}
       env:
         SOURCE_PATH: /path/to/your/dag_file.py
         DESTINATION_PATH: /home/ec2-user/destination/path/
-      tags: TEST-ETL, qa
   prod:
     runs-on: ubuntu-latest
     needs: qa
@@ -64,11 +60,9 @@ jobs:
         DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
         SOURCE_PATH: /path/to/your/qa_script.py
         DESTINATION_PATH: /qa/destination/path/
-      tags: TEST-ETL, production
     - name: Copy Dag to EC2
       run: scp -i ~/.ssh/ec2_key.pem -r ${{ env.SOURCE_PATH }} ec2-user@${{ secrets.EC2_IP_ADDRESS
         }}:${{ env.DESTINATION_PATH }}
       env:
         SOURCE_PATH: /path/to/your/dag_file.py
         DESTINATION_PATH: /home/ec2-user/destination/path/
-      tags: TEST-ETL, production
